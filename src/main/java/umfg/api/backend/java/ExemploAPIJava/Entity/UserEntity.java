@@ -1,9 +1,13 @@
 package umfg.api.backend.java.ExemploAPIJava.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import umfg.api.backend.java.ExemploAPIJava.Enum.UserGenero;
 import umfg.api.backend.java.ExemploAPIJava.Enum.UserStatus;
+
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -29,6 +33,10 @@ public class UserEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<AddressEntity> addresses;
 
     public UserEntity(String nome, String email, String senha, String CPF, UserGenero genero) {
         this.nome = nome;
