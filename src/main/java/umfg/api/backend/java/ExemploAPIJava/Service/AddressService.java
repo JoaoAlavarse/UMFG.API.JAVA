@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import umfg.api.backend.java.ExemploAPIJava.DTO.AddressDTO;
 import umfg.api.backend.java.ExemploAPIJava.Entity.AddressEntity;
+import umfg.api.backend.java.ExemploAPIJava.Enum.AddressUf;
+import umfg.api.backend.java.ExemploAPIJava.Exception.Addresses.CepException;
+import umfg.api.backend.java.ExemploAPIJava.Exception.Addresses.UfException;
 import umfg.api.backend.java.ExemploAPIJava.Repository.AddressRepository;
 
 import java.util.List;
@@ -18,6 +21,9 @@ public class AddressService {
     private UserService userService;
 
     public AddressEntity create(AddressDTO data){
+        verifyCep(data.cep());
+        verifyUf(data.estado());
+
         return repository.save(new AddressEntity(data.logradouro(), data.numero(), data.complemento(), data.cidade(),
                 data.estado(), data.cep(), this.userService.getById(data.userId())));
     }
@@ -42,5 +48,19 @@ public class AddressService {
     public void delete(String addressId){
         AddressEntity address = this.getById(addressId);
         repository.delete(address);
+    }
+
+    private void verifyCep(String cep){
+        if(cep.length() != 8){
+            throw new CepException();
+        }
+    }
+
+    private void verifyUf(String uf){
+        try {
+            AddressUf.valueOf(uf);
+        } catch (Exception e){
+            throw new UfException();
+        }
     }
 }
